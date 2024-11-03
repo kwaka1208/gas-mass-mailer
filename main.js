@@ -112,7 +112,16 @@ function main() {
     Logger.log('送信先: ' + mailAddress)
 
     // メール送信
-    GmailApp.sendEmail(mailAddress, subject, body, options)
+    try {
+      GmailApp.sendEmail(mailAddress, subject, body, options)
+    } catch(e) {
+      var msg = 'メールを送信できませんでした'
+      if (Session.getActiveUser().getEmail() != senderAddress) {
+        msg+= '\n' + senderAddress + 'は、使えない可能性があります'
+      }
+      ui.alert(msg)
+      return
+    }
 
     count++
     Logger.log(`startRow + i: ${startRow + i}`)
