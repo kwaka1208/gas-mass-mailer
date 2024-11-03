@@ -2,8 +2,9 @@
 const settings = {
   sheetName: '設定',
   fromName: 'B1',
-  titleText: 'B2',
-  documentUrl: 'B3',
+  fromAddress: 'B2',
+  titleText: 'B3',
+  documentUrl: 'B4',
   sendListTop: 'A2',
 }
 
@@ -42,12 +43,15 @@ function main() {
     送信元アドレス確認
   */
   var ui = SpreadsheetApp.getUi(); // スプレッドシートのUIを取得
-  var currentUserEmail = Session.getActiveUser().getEmail(); // 現在のユーザーのメールアドレスを取得
-  
+  var senderAddress = Session.getActiveUser().getEmail(); // 現在のユーザーのメールアドレスを取得
+  if (panel.getRange(settings.fromAddress).getValue() != '') {
+    senderAddress = panel.getRange(settings.fromAddress).getValue()
+  }
+
   // 確認ダイアログを表示
   var response = ui.alert(
     '送信元アドレスの確認',
-    '送信者のメールアドレスは ' + currentUserEmail + ' です。メールを送信しますか？',
+    '送信者のメールアドレスは ' + senderAddress + ' です。メールを送信しますか？',
     ui.ButtonSet.YES_NO);
   
   // NOなら処理を中断
@@ -102,6 +106,7 @@ function main() {
       cc: values[i][sendList.cc_address],                 // CC送信先メールアドレス
       bcc: values[i][sendList.bcc_address],               // BCC送信先メールアドレス
       name: panel.getRange(settings.fromName).getValue(), // 送信者名
+      from: senderAddress,
       attachments: attachments                            // 添付ファイル
     } 
     Logger.log('送信先: ' + mailAddress)
